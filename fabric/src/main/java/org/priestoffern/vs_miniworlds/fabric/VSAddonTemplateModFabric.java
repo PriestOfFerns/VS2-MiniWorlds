@@ -4,7 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
-import org.priestoffern.vs_miniworlds.VSAddonTemplateMod;
+import org.priestoffern.vs_miniworlds.VSMiniMod;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class VSAddonTemplateModFabric implements ModInitializer {
@@ -13,7 +13,7 @@ public class VSAddonTemplateModFabric implements ModInitializer {
         // force VS2 to load before eureka
         new ValkyrienSkiesModFabric().onInitialize();
 
-        VSAddonTemplateMod.init();
+        VSMiniMod.init();
     }
 
     @Environment(EnvType.CLIENT)
@@ -21,7 +21,7 @@ public class VSAddonTemplateModFabric implements ModInitializer {
 
         @Override
         public void onInitializeClient() {
-            VSAddonTemplateMod.initClient();
+            VSMiniMod.initClient();
         }
     }
 
