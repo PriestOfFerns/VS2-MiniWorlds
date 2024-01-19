@@ -5,6 +5,7 @@ object VSMiniMod {
     @JvmStatic
     fun init() {
         VSMiniBlocks.register()
+        VSMiniBlockEntities.register()
     }
 
     @JvmStatic

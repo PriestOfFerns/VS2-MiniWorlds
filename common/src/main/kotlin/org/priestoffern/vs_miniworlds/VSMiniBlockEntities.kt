@@ -29,7 +29,7 @@ object VSMiniBlockEntities {
             ).build(type)
         }
 
-    fun registerBlockEntities() {
+    fun register() {
         BLOCKENTITIES.register()
     }
 }
