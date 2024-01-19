@@ -10,7 +10,7 @@ import org.priestoffern.vs_miniworlds.VSMiniMod.initClient
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
 @Mod(VSMiniMod.MOD_ID)
-class VSAddonTemplateModForge {
+class VSMiniModForge {
     init {
         MOD_BUS.addListener { event: FMLClientSetupEvent? ->
             clientSetup(

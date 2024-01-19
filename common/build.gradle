@@ -11,7 +11,7 @@ repositories {
 
 
 loom {
-    accessWidenerPath = file("src/main/resources/vs_addon_template.accesswidener")
+    accessWidenerPath = file("src/main/resources/vs_miniworlds.accesswidener")
 }
 
 dependencies {

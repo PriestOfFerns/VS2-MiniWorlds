@@ -33,8 +33,8 @@ loom {
 
     forge {
         convertAccessWideners = true
-        mixinConfig "vs_addon_template.mixins.json"
-        mixinConfig "vs_addon_template-common.mixins.json"
+        mixinConfig "vs_miniworlds.mixins.json"
+        mixinConfig "vs_miniworlds-common.mixins.json"
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
     }
 }

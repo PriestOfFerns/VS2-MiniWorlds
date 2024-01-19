@@ -26,8 +26,8 @@
     ]
   },
   "mixins": [
-    "vs_addon_template-common.mixins.json",
-    "vs_addon_template.mixins.json"
+    "vs_miniworlds-common.mixins.json",
+    "vs_miniworlds.mixins.json"
   ],
   "depends": {
     "minecraft": ">=1.18.2",
