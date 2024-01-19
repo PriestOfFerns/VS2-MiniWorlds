@@ -29,4 +29,6 @@ object  VSMiniBlocks {
             items.register(it.id) { BlockItem(it.get(), Item.Properties().tab(CreativeModeTab.TAB_COMBAT)) }
         }
     }
+
+
 }
