@@ -14,7 +14,7 @@ object  VSMiniBlocks {
     private val BLOCKS = DeferredRegister.create(VSMiniMod.MOD_ID, Registry.BLOCK_REGISTRY)
     private val ITEMS = DeferredRegister.create(VSMiniMod.MOD_ID, Registry.ITEM_REGISTRY)
 
-    @JvmField var BALLISTIC_ACCELERATOR = BLOCKS.register("ballistic_accelerator") {Block(BlockBehaviour.Properties.of(Material.METAL).strength(2.0f))}
+    @JvmField var MINI_WORLD_CREATOR = BLOCKS.register("mini_world_creator") {Block(BlockBehaviour.Properties.of(Material.METAL).strength(2.0f))}
 
 
     fun register() {
