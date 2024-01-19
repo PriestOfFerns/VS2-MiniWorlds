@@ -1,28 +1,28 @@
 {
   "schemaVersion": 1,
-  "id": "vs_addon_template",
+  "id": "vs_miniworlds",
   "version": "${version}",
-  "name": "VS Addon Template",
-  "description": "An Addon Template for VS2",
+  "name": "VS Mini Worlds",
+  "description": "A VS2 addon, that uses static VS2 ships to make small worlds for you to enjoy",
   "authors": [
-    "You!"
+    "PriestOfFern"
   ],
   "contact": {
     "homepage": "https://valkyrienskies.org/",
     "sources": "https://github.com/ValkyrienSkies/Eureka"
   },
   "license": "Apache-2.0",
-  "icon": "assets/vs_addon_template/icon.png",
+  "icon": "assets/vs_miniworlds/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.techtastic.vs_addon_template.fabric.VSAddonTemplateModFabric"
+      "org.priestoffern.vs_miniworlds.fabric.VSAddonTemplateModFabric"
     ],
     "client": [
-      "io.github.techtastic.vs_addon_template.fabric.VSAddonTemplateModFabric${'$'}Client"
+      "org.priestoffern.vs_miniworlds.fabric.VSAddonTemplateModFabric${'$'}Client"
     ],
     "preLaunch": [
-      "io.github.techtastic.vs_addon_template.fabric.ValkyrienPreLaunch"
+      "org.priestoffern.vs_miniworlds.fabric.ValkyrienPreLaunch"
     ]
   },
   "mixins": [

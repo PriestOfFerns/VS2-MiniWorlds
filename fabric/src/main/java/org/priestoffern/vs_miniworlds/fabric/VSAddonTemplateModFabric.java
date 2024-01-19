@@ -1,10 +1,10 @@
-package io.github.techtastic.vs_addon_template.fabric;
+package org.priestoffern.vs_miniworlds.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
-import io.github.techtastic.vs_addon_template.VSAddonTemplateMod;
+import org.priestoffern.vs_miniworlds.VSAddonTemplateMod;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class VSAddonTemplateModFabric implements ModInitializer {
@@ -24,4 +24,6 @@ public class VSAddonTemplateModFabric implements ModInitializer {
             VSAddonTemplateMod.initClient();
         }
     }
+
+
 }

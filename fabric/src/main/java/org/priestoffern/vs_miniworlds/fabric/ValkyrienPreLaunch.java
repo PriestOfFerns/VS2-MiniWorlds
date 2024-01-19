@@ -1,4 +1,4 @@
-package io.github.techtastic.vs_addon_template.fabric;
+package org.priestoffern.vs_miniworlds.fabric;
 
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 

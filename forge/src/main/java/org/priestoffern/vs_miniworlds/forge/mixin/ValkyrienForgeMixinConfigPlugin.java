@@ -1,4 +1,4 @@
-package io.github.techtastic.vs_addon_template.forge.mixin;
+package org.priestoffern.vs_miniworlds.forge.mixin;
 
 import java.util.List;
 import java.util.Set;

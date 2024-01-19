@@ -1,7 +1,7 @@
-package io.github.techtastic.vs_addon_template
+package org.priestoffern.vs_miniworlds
 
 object VSAddonTemplateMod {
-    const val MOD_ID = "vs_addon_template"
+    const val MOD_ID = "vs_miniworlds"
 
     @JvmStatic
     fun init() {
