@@ -4,6 +4,14 @@ plugins {
     id "com.modrinth.minotaur"
 }
 
+
+repositories {
+    // ... your other Maven repositories above, if any ...
+    maven {
+        url = "https://jitpack.io"
+    }
+}
+
 apply from: '../gradle-scripts/publish-curseforge.gradle'
 
 architectury {
@@ -40,6 +48,11 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+    //pehkui
+    modApi("com.github.Virtuoel:Pehkui:${pehkui_version}", {
+        exclude group: "net.fabricmc.fabric-api"
+    })
 }
 
 processResources {

@@ -8,7 +8,12 @@ buildscript {
         // OPTIONAL Gradle plugin for Kotlin Serialization
         classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
     }
+
+
 }
+
+
+
 
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
@@ -42,6 +47,14 @@ configurations {
             developmentForge.extendsFrom common
 }
 
+repositories {
+    // ... your other Maven repositories above, if any ...
+    maven {
+        url = "https://jitpack.io"
+    }
+}
+
+
 dependencies {
     forge "net.minecraftforge:forge:$forge_version"
 
@@ -62,6 +75,9 @@ dependencies {
 
     // Kotlin for Forge
     implementation "thedarkcolour:kotlinforforge:$forge_kotlin_version"
+
+    //Pehkui
+    implementation "com.github.Virtuoel:Pehkui:${pehkui_version}"
 }
 
 processResources {

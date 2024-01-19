@@ -2,6 +2,14 @@ architectury {
     common(rootProject.enabled_platforms.split(","))
 }
 
+repositories {
+    // ... your other Maven repositories above, if any ...
+    maven {
+        url = "https://jitpack.io"
+    }
+}
+
+
 loom {
     accessWidenerPath = file("src/main/resources/vs_addon_template.accesswidener")
 }
@@ -25,6 +33,11 @@ dependencies {
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10"
     api "org.jetbrains.kotlin:kotlin-reflect:1.9.10"
+
+    //pehkui
+    modApi("com.github.Virtuoel:Pehkui:${pehkui_version}", {
+        exclude group: "net.fabricmc.fabric-api"
+    })
 }
 
 publishing {
