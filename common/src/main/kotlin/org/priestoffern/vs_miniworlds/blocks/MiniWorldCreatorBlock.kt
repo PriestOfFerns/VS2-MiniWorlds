@@ -43,7 +43,7 @@ class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties)
         }
         val Slevel:ServerLevel = level as ServerLevel
 
-        val ship:ServerShip = Slevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), true,0.25,level.dimensionId)
+        val ship:ServerShip = Slevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,0.25,level.dimensionId)
         level.setBlock(BlockPos(ship.transform.positionInWorld.x(),ship.transform.positionInWorld.y(),ship.transform.positionInWorld.z()),
             Blocks.ANDESITE_WALL.defaultBlockState(),0
         )
