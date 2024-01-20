@@ -22,12 +22,16 @@ import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.phys.BlockHitResult
 import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.priestoffern.vs_miniworlds.blockentities.MiniWorldCreatorBlockEntity
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.apigame.ShipTeleportData
+import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
+import java.util.*
 
 class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties) {
     override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
@@ -37,33 +41,50 @@ class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties)
 
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
         super.onPlace(state, level, pos, oldState, isMoving)
+        val be: BlockEntity? = level.getBlockEntity(pos)
 
-        if (level.isClientSide) {
+
+        if (level.isClientSide || be !is MiniWorldCreatorBlockEntity) {
             return
         }
+        val me: MiniWorldCreatorBlockEntity = be as MiniWorldCreatorBlockEntity
         val Slevel:ServerLevel = level as ServerLevel
 
         val ship:ServerShip = Slevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,0.25,level.dimensionId)
-        level.setBlock(BlockPos(ship.transform.positionInWorld.x(),ship.transform.positionInWorld.y(),ship.transform.positionInWorld.z()),
-            Blocks.ANDESITE_WALL.defaultBlockState(),0
+        ship.isStatic = true
+        me.assign(ship)
+
+        level.setBlock(
+            BlockPos(
+                ship.transform.positionInShip.x(),
+                ship.transform.positionInShip.y(),
+                ship.transform.positionInShip.z(),
+            ),
+            Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
         )
-
-
-//        val be: BlockEntity? = level.getBlockEntity(pos)
-//        if (be !is MiniWorldCreatorBlockEntity)
-//            return;
-//        val ME: MiniWorldCreatorBlockEntity = be as MiniWorldCreatorBlockEntity
+        for (x in 0..3) {
+            for (y in 0..3) {
+                level.setBlock(
+                    BlockPos(
+                        ship.transform.positionInShip.x() + x,
+                        ship.transform.positionInShip.y(),
+                        ship.transform.positionInShip.z() + y,
+                    ),
+                    Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
+                )
+            }
+        }
+        Slevel.server.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = Vector3d(pos.x+0.5,pos.y+1.125,pos.z+0.5)))
 
     }
 
-
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
-//
 //
 //    }
 
     override fun getRenderShape(blockState: BlockState): RenderShape {
         return RenderShape.MODEL
     }
+
 
 }
