@@ -38,11 +38,9 @@ class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties)
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
         super.onPlace(state, level, pos, oldState, isMoving)
 
-        println("A")
         if (level.isClientSide) {
             return
         }
-        println("B")
         val Slevel:ServerLevel = level as ServerLevel
 
         val ship:ServerShip = Slevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), true,0.25,level.dimensionId)
@@ -60,7 +58,7 @@ class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties)
 
 
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
-//        // TODO: Shrink player
+//
 //
 //    }
 
