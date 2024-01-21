@@ -9,6 +9,9 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.Level
@@ -20,13 +23,17 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.joml.Vector3ic
+import org.joml.primitives.AABBdc
+import org.joml.primitives.AABBic
 import org.priestoffern.vs_miniworlds.blockentities.MiniWorldCreatorBlockEntity
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.mod.common.dimensionId
@@ -44,15 +51,15 @@ class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties)
         val be: BlockEntity? = level.getBlockEntity(pos)
 
 
-        if (level.isClientSide || be !is MiniWorldCreatorBlockEntity) {
-            return
-        }
+        if (level.isClientSide || be !is MiniWorldCreatorBlockEntity) return
         val me: MiniWorldCreatorBlockEntity = be as MiniWorldCreatorBlockEntity
         val Slevel:ServerLevel = level as ServerLevel
 
         val ship:ServerShip = Slevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,0.25,level.dimensionId)
         ship.isStatic = true
         me.assign(ship)
+
+
 
         level.setBlock(
             BlockPos(
@@ -86,5 +93,31 @@ class MiniWorldCreatorBlock(properties: Properties): BaseEntityBlock(properties)
         return RenderShape.MODEL
     }
 
-
+    // This causes collision box errors, so I'm just going to shelf this for now
+//    override fun tick(state: BlockState, level: ServerLevel, pos: BlockPos, random: Random) {
+//        super.tick(state, level, pos, random)
+//
+//        val be: BlockEntity? = level.getBlockEntity(pos)
+//        if (level.isClientSide || be !is MiniWorldCreatorBlockEntity) return
+//        val me: MiniWorldCreatorBlockEntity = be as MiniWorldCreatorBlockEntity
+//
+//        val ship: Ship? = me.connectedShip
+//        if (ship == null) return
+//        val sAABB: AABBdc = ship.worldAABB
+//
+//
+//        println(sAABB.minX())
+//        val check: AABB = AABB(
+//            sAABB.minX(),
+//            sAABB.minY() ,
+//            sAABB.minZ() ,
+//            sAABB.maxX(),
+//            sAABB.maxY()+2,
+//            sAABB.maxZ()
+//        )
+//
+//        for (ent: LivingEntity in level.getEntitiesOfClass(LivingEntity::class.java,check)) {
+//            ent.hurt(DamageSource.GENERIC,1f)
+//        }
+//    }
 }
