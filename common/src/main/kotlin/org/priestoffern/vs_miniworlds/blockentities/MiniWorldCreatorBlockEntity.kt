@@ -23,6 +23,8 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
     override fun load(tag: CompoundTag) {
         super.load(tag)
         var shipID: Long = tag.getLong("connectedship")
+
+
         if (shipID!=-1L) connectedShip=this.level.shipObjectWorld.allShips.getById(shipID)
     }
 

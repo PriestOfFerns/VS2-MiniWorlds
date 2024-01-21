@@ -14,6 +14,7 @@ import org.joml.Vector3i
 import org.priestoffern.vs_miniworlds.blockentities.MiniWorldCreatorBlockEntity
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
+import org.valkyrienskies.mod.common.allShips
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 
@@ -30,7 +31,7 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
 
 
         if (level.isClientSide || be !is MiniWorldCreatorBlockEntity) return
-        val me: MiniWorldCreatorBlockEntity = be as MiniWorldCreatorBlockEntity
+        val me: MiniWorldCreatorBlockEntity = be
         val serverLevel:ServerLevel = level as ServerLevel
 
         val ship:ServerShip = serverLevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,1/Tier,level.dimensionId)
@@ -69,6 +70,21 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
 
     override fun getRenderShape(blockState: BlockState): RenderShape {
         return RenderShape.MODEL
+    }
+
+    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {
+
+
+        val be: BlockEntity? = level.getBlockEntity(pos)
+
+        if (!level.isClientSide && be is MiniWorldCreatorBlockEntity) {
+            val me: MiniWorldCreatorBlockEntity = be
+            if (me.connectedShip==null) return
+            (level as ServerLevel).server.shipObjectWorld.deleteShip(be.connectedShip as ServerShip)
+
+        }
+        super.onRemove(state, level, pos, newState, isMoving)
+
     }
 
     // This causes collision box errors, so I'm just going to shelf this for now
