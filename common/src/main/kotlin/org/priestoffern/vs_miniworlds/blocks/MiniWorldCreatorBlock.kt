@@ -13,9 +13,12 @@ import org.joml.Vector3d
 import org.joml.Vector3i
 import org.priestoffern.vs_miniworlds.blockentities.MiniWorldCreatorBlockEntity
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.apigame.constraints.VSAttachmentConstraint
+import org.valkyrienskies.core.apigame.constraints.VSConstraint
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.mod.common.allShips
 import org.valkyrienskies.mod.common.dimensionId
+import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 
 class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntityBlock(properties) {
@@ -35,7 +38,6 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
         val serverLevel:ServerLevel = level as ServerLevel
 
         val ship:ServerShip = serverLevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,1/Tier,level.dimensionId)
-        ship.isStatic = true
         me.assign(ship)
 
 
@@ -62,6 +64,12 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
         }
         serverLevel.server.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = Vector3d(pos.x+0.5,pos.y+1+(0.5/Tier),pos.z+0.5)))
 
+        val shipThisIsIn = serverLevel.getShipManagingPos(pos)
+        serverLevel.server.shipObjectWorld.createNewConstraint(VSAttachmentConstraint(
+            shipThisIsIn?.id ?: level.shipObjectWorld.dimensionToGroundBodyIdImmutable[level.dimensionId]!!,
+            ship.id,1e-10,Vector3d(
+            pos.x.toDouble(), pos.y.toDouble()+0.5, pos.z.toDouble()
+        ),Vector3d(ship.transform.positionInShip.x(),ship.transform.positionInShip.y(),ship.transform.positionInShip.z()),1e10,0.0))
     }
 
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
