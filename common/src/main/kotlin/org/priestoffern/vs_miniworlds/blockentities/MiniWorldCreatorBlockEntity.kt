@@ -10,11 +10,16 @@ import org.valkyrienskies.mod.common.shipObjectWorld
 
 class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntity(VSMiniBlockEntities.MINI_WORLD_CREATOR.get(),pos, state) {
     var connectedShip: Ship? = null
-
+    var shipID: Long = -1L;
 
     override fun saveAdditional(tag: CompoundTag) {
         super.saveAdditional(tag)
-        if (connectedShip!=null) tag.putLong("connectedship", (connectedShip as Ship).id)
+
+        if (shipID!=-1L) connectedShip=this.level.shipObjectWorld.allShips.getById(shipID)
+        if (connectedShip!=null) {
+            tag.putLong("connectedship", (connectedShip as Ship).id)
+            shipID = (connectedShip as Ship).id
+        }
         else tag.putLong("connectedship", -1)
 
 
@@ -22,10 +27,8 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
 
     override fun load(tag: CompoundTag) {
         super.load(tag)
-        var shipID: Long = tag.getLong("connectedship")
+        shipID = tag.getLong("connectedship")
 
-
-        if (shipID!=-1L) connectedShip=this.level.shipObjectWorld.allShips.getById(shipID)
     }
 
     fun assign(ship: Ship) {
