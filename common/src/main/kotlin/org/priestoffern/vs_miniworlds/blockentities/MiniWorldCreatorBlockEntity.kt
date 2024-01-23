@@ -16,7 +16,7 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
         super.saveAdditional(tag)
 
         if (shipID!=-1L) connectedShip=this.level.shipObjectWorld.allShips.getById(shipID)
-        if (connectedShip!=null) {
+        if (connectedShip!=null) { // This is probably a stupid way to do it, but I can't put this in load, because load happens before the ships load in
             tag.putLong("connectedship", (connectedShip as Ship).id)
             shipID = (connectedShip as Ship).id
         }
