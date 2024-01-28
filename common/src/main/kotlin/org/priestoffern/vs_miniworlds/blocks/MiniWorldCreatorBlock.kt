@@ -126,7 +126,7 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
             shipId0, shipId1, attachmentCompliance, attachmentLocalPos0, attachmentLocalPos1,
             attachmentMaxForce, attachmentFixedDistance
         )
-
+        level.shipObjectWorld.createNewConstraint(attachmentConstraint)
     }
 
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
