@@ -10,16 +10,20 @@ import net.minecraft.world.level.block.RenderShape
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.priestoffern.vs_miniworlds.blockentities.MiniWorldCreatorBlockEntity
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.apigame.constraints.VSAttachmentConstraint
 import org.valkyrienskies.core.apigame.constraints.VSConstraint
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
+import org.valkyrienskies.core.impl.game.ships.ShipDataCommon
+import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.mod.common.allShips
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
+import kotlin.math.roundToInt
 
 class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntityBlock(properties) {
     override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
@@ -62,14 +66,47 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
                 )
             }
         }
-        serverLevel.server.shipObjectWorld.teleportShip(ship, ShipTeleportDataImpl(newPos = Vector3d(pos.x+0.5,pos.y+1+(0.5/Tier),pos.z+0.5)))
+
+
+
+        val shipCenterPos = BlockPos(
+            (ship.transform.positionInShip.x() - 0.5).roundToInt(),
+            (ship.transform.positionInShip.y() - 0.5).roundToInt(),
+            (ship.transform.positionInShip.z() - 0.5).roundToInt()
+        )
+
+        val attachmentOffset0: Vector3dc = Vector3d(0.0, 0.5, 0.0)
+        val attachmentOffset1: Vector3dc = Vector3d(0.0, -0.5, 0.0)
+
+        val attachmentLocalPos0: Vector3dc = Vector3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5).add(attachmentOffset0)
+        val attachmentLocalPos1: Vector3dc =
+            Vector3d(shipCenterPos.x + 0.5, shipCenterPos.y + 0.5, shipCenterPos.z + 0.5).add(attachmentOffset1)
+
 
         val shipThisIsIn = serverLevel.getShipManagingPos(pos)
-        serverLevel.server.shipObjectWorld.createNewConstraint(VSAttachmentConstraint(
-            shipThisIsIn?.id ?: level.shipObjectWorld.dimensionToGroundBodyIdImmutable[level.dimensionId]!!,
-            ship.id,1e-10,Vector3d(
-            pos.x.toDouble(), pos.y.toDouble()+0.5, pos.z.toDouble()
-        ),Vector3d(ship.transform.positionInShip.x(),ship.transform.positionInShip.y(),ship.transform.positionInShip.z()),1e10,0.0))
+
+        val newPos = Vector3d(attachmentLocalPos0)
+        newPos.sub(attachmentOffset1)
+        val newTransform = ShipTransformImpl(
+            newPos,
+            ship.transform.positionInShip,
+            ship.transform.shipToWorldRotation,
+            ship.transform.shipToWorldScaling
+        )
+        // Update the ship transform
+        (ship as ShipDataCommon).transform = newTransform
+
+        val shipId0 = shipThisIsIn?.id ?: level.shipObjectWorld.dimensionToGroundBodyIdImmutable[level.dimensionId]!!
+        val shipId1 = ship.id
+
+        val attachmentCompliance = 1e-10
+        val attachmentMaxForce = 1e10
+        val attachmentFixedDistance = 0.0
+        val attachmentConstraint = VSAttachmentConstraint(
+            shipId0, shipId1, attachmentCompliance, attachmentLocalPos0, attachmentLocalPos1,
+            attachmentMaxForce, attachmentFixedDistance
+        )
+
     }
 
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
