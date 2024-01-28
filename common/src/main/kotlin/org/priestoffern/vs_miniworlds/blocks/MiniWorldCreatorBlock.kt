@@ -68,6 +68,8 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
         }
 
 
+        // Gonna be honest. Most of this code is copied directly from VS2 debug hinges
+
 
         val shipCenterPos = BlockPos(
             (ship.transform.positionInShip.x() - 0.5).roundToInt(),
@@ -85,19 +87,37 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
 
         val shipThisIsIn = serverLevel.getShipManagingPos(pos)
 
-        val newPos = Vector3d(attachmentLocalPos0)
-        newPos.sub(attachmentOffset1)
-        val newTransform = ShipTransformImpl(
-            newPos,
-            ship.transform.positionInShip,
-            ship.transform.shipToWorldRotation,
-            ship.transform.shipToWorldScaling
-        )
-        // Update the ship transform
-        (ship as ShipDataCommon).transform = newTransform
+        if (shipThisIsIn != null) {
+            // Put the new ship where the old ship is
+            val newPos = shipThisIsIn.transform.shipToWorld.transformPosition(attachmentLocalPos0, Vector3d())
+            newPos.sub(shipThisIsIn.transform.shipToWorldRotation.transform(attachmentOffset1, Vector3d()))
+            val newTransform = ShipTransformImpl(
+                newPos,
+                ship.transform.positionInShip,
+                shipThisIsIn.transform.shipToWorldRotation, // Copy source ship rotation
+                ship.transform.shipToWorldScaling
+            )
+            // Update the ship transform
+            (ship as ShipDataCommon).transform = newTransform
+        } else {
+            val newPos = Vector3d(attachmentLocalPos0)
+            newPos.sub(attachmentOffset1)
+            val newTransform = ShipTransformImpl(
+                newPos,
+                ship.transform.positionInShip,
+                ship.transform.shipToWorldRotation,
+                ship.transform.shipToWorldScaling
+            )
+            // Update the ship transform
+            (ship as ShipDataCommon).transform = newTransform
+        }
+
 
         val shipId0 = shipThisIsIn?.id ?: level.shipObjectWorld.dimensionToGroundBodyIdImmutable[level.dimensionId]!!
         val shipId1 = ship.id
+
+
+
 
         val attachmentCompliance = 1e-10
         val attachmentMaxForce = 1e10
