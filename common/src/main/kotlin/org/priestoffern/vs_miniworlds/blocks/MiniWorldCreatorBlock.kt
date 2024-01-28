@@ -54,21 +54,9 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
             ),
             Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
         )
-        for (x in 0..(Tier-1).toInt()) {
-            for (y in 0..(Tier-1).toInt()) {
-                level.setBlock(
-                    BlockPos(
-                        ship.transform.positionInShip.x() + x,
-                        ship.transform.positionInShip.y(),
-                        ship.transform.positionInShip.z() + y,
-                    ),
-                    Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
-                )
-            }
-        }
 
 
-        // Gonna be honest. Most of this code is copied directly from VS2 debug hinges
+
 
 
         val shipCenterPos = BlockPos(
@@ -82,7 +70,7 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
 
         val attachmentLocalPos0: Vector3dc = Vector3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5).add(attachmentOffset0)
         val attachmentLocalPos1: Vector3dc =
-            Vector3d(shipCenterPos.x + 0.5, shipCenterPos.y + 0.5, shipCenterPos.z + 0.5).add(attachmentOffset1)
+            Vector3d(shipCenterPos.x + Tier/2, shipCenterPos.y + 0.5, shipCenterPos.z + Tier/2).add(attachmentOffset1)
 
 
         val shipThisIsIn = serverLevel.getShipManagingPos(pos)
@@ -127,6 +115,19 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
             attachmentMaxForce, attachmentFixedDistance
         )
         level.shipObjectWorld.createNewConstraint(attachmentConstraint)
+
+        for (x in 0..(Tier-1).toInt()) {
+            for (y in 0..(Tier-1).toInt()) {
+                level.setBlock(
+                    BlockPos(
+                        ship.transform.positionInShip.x() + x,
+                        ship.transform.positionInShip.y(),
+                        ship.transform.positionInShip.z() + y,
+                    ),
+                    Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
+                )
+            }
+        }
     }
 
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
