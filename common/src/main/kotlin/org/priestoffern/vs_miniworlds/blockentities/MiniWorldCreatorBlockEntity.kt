@@ -14,34 +14,44 @@ import org.priestoffern.vs_miniworlds.blocks.MiniWorldCreatorBlock
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.apigame.constraints.VSAttachmentConstraint
-import org.valkyrienskies.core.impl.game.ships.ShipDataCommon
-import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.impl.game.ships.*
+import org.valkyrienskies.core.impl.hooks.VSEvents
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.physics_api.ConstraintId
 import kotlin.math.roundToInt
 
 class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntity(VSMiniBlockEntities.MINI_WORLD_CREATOR.get(),pos, state) {
     var connectedShip: Ship? = null
-    var shipID: Long = -1L;
+
+    private var otherPos: BlockPos? = null
+    private var attachConstraintId: ConstraintId? = null
 
     override fun saveAdditional(tag: CompoundTag) {
         super.saveAdditional(tag)
 
-        if (shipID!=-1L) connectedShip=this.level.shipObjectWorld.allShips.getById(shipID)
-        if (connectedShip!=null) { // This is probably a stupid way to do it, but I can't put this in load, because load happens before the ships load in
-            tag.putLong("connectedship", (connectedShip as Ship).id)
-            shipID = (connectedShip as Ship).id
-        }
-        else tag.putLong("connectedship", -1)
 
+        if (otherPos != null) {
+            tag.putLong("otherPos", otherPos!!.asLong())
+        }
 
     }
 
     override fun load(tag: CompoundTag) {
         super.load(tag)
-        shipID = tag.getLong("connectedship")
 
+        if (tag.contains("otherPos")) {
+            otherPos = BlockPos.of(tag.getLong("otherPos"))
+            VSEvents.shipLoadEvent.on { (otherShip), handler ->
+                if (otherShip.chunkClaim.contains(otherPos!!.x / 16, otherPos!!.z / 16)) {
+                    print("Found ship")
+                    handler.unregister()
+                    connectedShip = otherShip.shipData
+                    createConstraint(otherShip.shipData,(this.blockState.block as MiniWorldCreatorBlock).Tier,this.blockPos,this.level as ServerLevel)
+                }
+            }
+        }
     }
 
 
@@ -50,6 +60,9 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
         val block: MiniWorldCreatorBlock = this.blockState.block as MiniWorldCreatorBlock
         val tier: Double = block.Tier;
         val level:ServerLevel = this.level as ServerLevel
+
+
+
 
         val ship: ServerShip = level.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,1/tier,
             level.dimensionId)
@@ -66,10 +79,28 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
             Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
         )
 
+        createConstraint(ship, tier, pos, level)
 
 
 
 
+
+
+        for (x in 0..(tier-1).toInt()) {
+            for (y in 0..(tier-1).toInt()) {
+                level.setBlock(
+                    BlockPos(
+                        ship.transform.positionInShip.x() + x,
+                        ship.transform.positionInShip.y(),
+                        ship.transform.positionInShip.z() + y,
+                    ),
+                    Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
+                )
+            }
+        }
+    }
+
+    fun createConstraint(ship: ServerShip, tier: Double, pos:BlockPos, level:ServerLevel) {
         val shipCenterPos = BlockPos(
             (ship.transform.positionInShip.x() - 0.5).roundToInt(),
             (ship.transform.positionInShip.y() - 0.5).roundToInt(),
@@ -108,6 +139,7 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
                 ship.transform.shipToWorldScaling
             )
             // Update the ship transform
+
             (ship as ShipDataCommon).transform = newTransform
         }
 
@@ -125,20 +157,7 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
             shipId0, shipId1, attachmentCompliance, attachmentLocalPos0, attachmentLocalPos1,
             attachmentMaxForce, attachmentFixedDistance
         )
-        level.shipObjectWorld.createNewConstraint(attachmentConstraint)
-
-        for (x in 0..(tier-1).toInt()) {
-            for (y in 0..(tier-1).toInt()) {
-                level.setBlock(
-                    BlockPos(
-                        ship.transform.positionInShip.x() + x,
-                        ship.transform.positionInShip.y(),
-                        ship.transform.positionInShip.z() + y,
-                    ),
-                    Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
-                )
-            }
-        }
+        attachConstraintId = level.shipObjectWorld.createNewConstraint(attachmentConstraint)
+        otherPos = shipCenterPos
     }
-
 }
