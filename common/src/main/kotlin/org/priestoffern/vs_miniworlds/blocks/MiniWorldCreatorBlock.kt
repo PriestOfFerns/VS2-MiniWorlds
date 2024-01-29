@@ -37,97 +37,14 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
         val be: BlockEntity? = level.getBlockEntity(pos)
 
 
-        if (level.isClientSide || be !is MiniWorldCreatorBlockEntity) return
+        if (level.isClientSide() || be !is MiniWorldCreatorBlockEntity) return
+
         val me: MiniWorldCreatorBlockEntity = be
         val serverLevel:ServerLevel = level as ServerLevel
 
-        val ship:ServerShip = serverLevel.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,1/Tier,level.dimensionId)
-        me.assign(ship)
+        me.createMiniworld()
 
 
-
-        level.setBlock(
-            BlockPos(
-                ship.transform.positionInShip.x(),
-                ship.transform.positionInShip.y(),
-                ship.transform.positionInShip.z(),
-            ),
-            Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
-        )
-
-
-
-
-
-        val shipCenterPos = BlockPos(
-            (ship.transform.positionInShip.x() - 0.5).roundToInt(),
-            (ship.transform.positionInShip.y() - 0.5).roundToInt(),
-            (ship.transform.positionInShip.z() - 0.5).roundToInt()
-        )
-
-        val attachmentOffset0: Vector3dc = Vector3d(0.0, 0.5, 0.0)
-        val attachmentOffset1: Vector3dc = Vector3d(0.0, -0.5, 0.0)
-
-        val attachmentLocalPos0: Vector3dc = Vector3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5).add(attachmentOffset0)
-        val attachmentLocalPos1: Vector3dc =
-            Vector3d(shipCenterPos.x + Tier/2, shipCenterPos.y + 0.5, shipCenterPos.z + Tier/2).add(attachmentOffset1)
-
-
-        val shipThisIsIn = serverLevel.getShipManagingPos(pos)
-
-        if (shipThisIsIn != null) {
-            // Put the new ship where the old ship is
-            val newPos = shipThisIsIn.transform.shipToWorld.transformPosition(attachmentLocalPos0, Vector3d())
-            newPos.sub(shipThisIsIn.transform.shipToWorldRotation.transform(attachmentOffset1, Vector3d()))
-            val newTransform = ShipTransformImpl(
-                newPos,
-                ship.transform.positionInShip,
-                shipThisIsIn.transform.shipToWorldRotation, // Copy source ship rotation
-                ship.transform.shipToWorldScaling
-            )
-            // Update the ship transform
-            (ship as ShipDataCommon).transform = newTransform
-        } else {
-            val newPos = Vector3d(attachmentLocalPos0)
-            newPos.sub(attachmentOffset1)
-            val newTransform = ShipTransformImpl(
-                newPos,
-                ship.transform.positionInShip,
-                ship.transform.shipToWorldRotation,
-                ship.transform.shipToWorldScaling
-            )
-            // Update the ship transform
-            (ship as ShipDataCommon).transform = newTransform
-        }
-
-
-        val shipId0 = shipThisIsIn?.id ?: level.shipObjectWorld.dimensionToGroundBodyIdImmutable[level.dimensionId]!!
-        val shipId1 = ship.id
-
-
-
-
-        val attachmentCompliance = 1e-10
-        val attachmentMaxForce = 1e10
-        val attachmentFixedDistance = 0.0
-        val attachmentConstraint = VSAttachmentConstraint(
-            shipId0, shipId1, attachmentCompliance, attachmentLocalPos0, attachmentLocalPos1,
-            attachmentMaxForce, attachmentFixedDistance
-        )
-        level.shipObjectWorld.createNewConstraint(attachmentConstraint)
-
-        for (x in 0..(Tier-1).toInt()) {
-            for (y in 0..(Tier-1).toInt()) {
-                level.setBlock(
-                    BlockPos(
-                        ship.transform.positionInShip.x() + x,
-                        ship.transform.positionInShip.y(),
-                        ship.transform.positionInShip.z() + y,
-                    ),
-                    Blocks.POLISHED_ANDESITE.defaultBlockState(), 0
-                )
-            }
-        }
     }
 
 //    override fun use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult {
