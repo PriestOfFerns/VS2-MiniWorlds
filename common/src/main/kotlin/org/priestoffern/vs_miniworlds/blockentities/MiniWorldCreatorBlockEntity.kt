@@ -11,6 +11,7 @@ import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.priestoffern.vs_miniworlds.VSMiniBlockEntities
 import org.priestoffern.vs_miniworlds.blocks.MiniWorldCreatorBlock
+import org.valkyrienskies.core.api.ships.LoadedShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.apigame.constraints.VSAttachmentConstraint
@@ -30,8 +31,6 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
     override fun saveAdditional(tag: CompoundTag) {
         super.saveAdditional(tag)
 
-        println("///////////////////")
-        println(connectedShip == null)
         if (connectedShip != null) {
             tag.putLong("connectedshipid", connectedShip!!.id)
         }
@@ -45,17 +44,35 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
             val connectedShipID: Long = tag.getLong("connectedshipid")
             println("//////////////////////////This is the connected ship id")
             println(connectedShipID)
-            VSEvents.shipLoadEvent.on { (otherShip), handler ->
-                println("//////////////////////////This is random ship id")
-                println(otherShip.id)
-                println(connectedShipID)
-                println(connectedShipID==otherShip.id)
-                if (otherShip.id==connectedShipID) {
-                    handler.unregister()
-                    connectedShip = otherShip.shipData
-                    createConstraint(otherShip.shipData,(this.blockState.block as MiniWorldCreatorBlock).Tier,this.blockPos,this.level as ServerLevel)
+            val found: LoadedShip? = level.shipObjectWorld.loadedShips.getById(connectedShipID)
+            if (found!=null) {
+                println("found in loadedShips")
+                connectedShip = found
+                createConstraint(
+                    found as ServerShip,
+                    (this.blockState.block as MiniWorldCreatorBlock).Tier,
+                    this.blockPos,
+                    this.level as ServerLevel
+                )
+            }
+            else {
+                println(":c")
+                VSEvents.shipLoadEvent.on { (otherShip), handler ->
+
+                    print(otherShip.id)
+                    print(" ")
+                    if (otherShip.id == connectedShipID) {
+                        handler.unregister()
+                        connectedShip = otherShip.shipData
+                        createConstraint(
+                            otherShip.shipData,
+                            (this.blockState.block as MiniWorldCreatorBlock).Tier,
+                            this.blockPos,
+                            this.level as ServerLevel
+                        )
 
 
+                    }
                 }
             }
         }
