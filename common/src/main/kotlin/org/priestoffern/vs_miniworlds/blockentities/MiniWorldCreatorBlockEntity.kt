@@ -60,7 +60,9 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
                 VSEvents.shipLoadEvent.on { (otherShip), handler ->
 
                     print(otherShip.id)
-                    print(" ")
+                    print(" (")
+                    print(otherShip.id==connectedShipID)
+                    print(") ")
                     if (otherShip.id == connectedShipID) {
                         handler.unregister()
                         connectedShip = otherShip.shipData
