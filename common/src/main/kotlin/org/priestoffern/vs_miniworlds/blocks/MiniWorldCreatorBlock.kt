@@ -62,8 +62,7 @@ class MiniWorldCreatorBlock(properties: Properties, val Tier: Double): BaseEntit
 
         if (!level.isClientSide && be is MiniWorldCreatorBlockEntity) {
             val me: MiniWorldCreatorBlockEntity = be
-            if (me.connectedShip==null) return
-            (level as ServerLevel).server.shipObjectWorld.deleteShip(be.connectedShip as ServerShip)
+            me.onRemove()
 
         }
         super.onRemove(state, level, pos, newState, isMoving) // super method has to be at the end, because otherwise the BlockEntity gets deleted first

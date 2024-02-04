@@ -26,7 +26,20 @@ import org.valkyrienskies.physics_api.ConstraintId
 import kotlin.math.roundToInt
 
 class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntity(VSMiniBlockEntities.MINI_WORLD_CREATOR.get(),pos, state) {
-    var connectedShip: Ship? = null
+    var connectedShipID: Long? = null
+
+    override fun load(tag: CompoundTag) {
+        super.load(tag)
+
+        connectedShipID = tag.getLong("connectedshipid")
+    }
+
+    override fun saveAdditional(tag: CompoundTag) {
+        super.saveAdditional(tag)
+
+        if (connectedShipID!=null) tag.putLong("connectedShipID", connectedShipID!!)
+    }
+
     fun createMiniworld() {
         val pos: BlockPos = this.blockPos
         val block: MiniWorldCreatorBlock = this.blockState.block as MiniWorldCreatorBlock
@@ -38,7 +51,7 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
 
         val ship: ServerShip = level.server.shipObjectWorld.createNewShipAtBlock(Vector3i(pos.x,pos.y+1,pos.z), false,1/tier,
             level.dimensionId)
-        connectedShip=ship
+        connectedShipID=ship.id
 
 
 
@@ -134,5 +147,13 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
         )
         level.makeManagedConstraint(attachmentConstraint)
 
+    }
+
+    fun onRemove() {
+
+        if (connectedShipID==null || level?.isClientSide() == true) return
+        val ship: Ship = level.shipObjectWorld.allShips.getById(connectedShipID!!) ?: return
+        val servShip:ServerShip = ship as ServerShip
+        (level as ServerLevel).server.shipObjectWorld.deleteShip(servShip)
     }
 }

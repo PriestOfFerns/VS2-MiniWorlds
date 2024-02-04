@@ -32,7 +32,10 @@ internal class LoadingGroup(
 
     private fun applyConstraints() {
         for (constraint in constraintsToLoad) {
+
             level.makeManagedConstraintWithId(constraint.first, constraint.second)
+
+
         }
         for ((k, ship) in shipRefs) {
             ship.isStatic = shipIsStaticStatus[ship.id] ?: continue
