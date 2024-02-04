@@ -3,7 +3,8 @@
   "id": "vs_miniworlds",
   "version": "${version}",
   "name": "VS Mini Worlds",
-  "description": "A VS2 addon, that uses static VS2 ships to make small worlds for you to enjoy",
+  "description": "A VS2 addon, that uses static VS2 ships to make small worlds for you to enjoy\nSpecial thanks to SpaceEye, for letting me \"borrow\" his constraint saving code",
+
   "authors": [
     "PriestOfFern"
   ],

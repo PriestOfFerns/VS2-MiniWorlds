@@ -11,6 +11,7 @@ import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.priestoffern.vs_miniworlds.VSMiniBlockEntities
 import org.priestoffern.vs_miniworlds.blocks.MiniWorldCreatorBlock
+import org.priestoffern.vs_miniworlds.util.makeManagedConstraint
 import org.valkyrienskies.core.api.ships.LoadedShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
@@ -26,61 +27,6 @@ import kotlin.math.roundToInt
 
 class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntity(VSMiniBlockEntities.MINI_WORLD_CREATOR.get(),pos, state) {
     var connectedShip: Ship? = null
-
-
-    override fun saveAdditional(tag: CompoundTag) {
-        super.saveAdditional(tag)
-
-        if (connectedShip != null) {
-            tag.putLong("connectedshipid", connectedShip!!.id)
-        }
-
-    }
-
-    override fun load(tag: CompoundTag) {
-        super.load(tag)
-
-        if (tag.contains("connectedshipid")) {
-            val connectedShipID: Long = tag.getLong("connectedshipid")
-            println("//////////////////////////This is the connected ship id")
-            println(connectedShipID)
-            val found: LoadedShip? = level.shipObjectWorld.loadedShips.getById(connectedShipID)
-            if (found!=null) {
-                println("found in loadedShips")
-                connectedShip = found
-                createConstraint(
-                    found as ServerShip,
-                    (this.blockState.block as MiniWorldCreatorBlock).Tier,
-                    this.blockPos,
-                    this.level as ServerLevel
-                )
-            }
-            else {
-                println(":c")
-                VSEvents.shipLoadEvent.on { (otherShip), handler ->
-
-                    print(otherShip.id)
-                    print(" (")
-                    print(otherShip.id==connectedShipID)
-                    print(") ")
-                    if (otherShip.id == connectedShipID) {
-                        handler.unregister()
-                        connectedShip = otherShip.shipData
-                        createConstraint(
-                            otherShip.shipData,
-                            (this.blockState.block as MiniWorldCreatorBlock).Tier,
-                            this.blockPos,
-                            this.level as ServerLevel
-                        )
-
-
-                    }
-                }
-            }
-        }
-    }
-
-
     fun createMiniworld() {
         val pos: BlockPos = this.blockPos
         val block: MiniWorldCreatorBlock = this.blockState.block as MiniWorldCreatorBlock
@@ -186,7 +132,7 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
             shipId0, shipId1, attachmentCompliance, attachmentLocalPos0, attachmentLocalPos1,
             attachmentMaxForce, attachmentFixedDistance
         )
-        level.shipObjectWorld.createNewConstraint(attachmentConstraint)
+        level.makeManagedConstraint(attachmentConstraint)
 
     }
 }

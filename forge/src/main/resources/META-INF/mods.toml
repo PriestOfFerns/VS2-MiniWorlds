@@ -10,6 +10,8 @@ displayName = "VS Mini Worlds"
 authors = ["PriestOfFern"]
 description = '''
 A VS2 addon, that uses static VS2 ships to make small worlds for you to enjoy
+
+Special thanks to SpaceEye, for letting me "borrow" his constraint saving code
 '''
 logoFile = "icon.png"
 
