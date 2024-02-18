@@ -26,18 +26,17 @@ import org.valkyrienskies.physics_api.ConstraintId
 import kotlin.math.roundToInt
 
 class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntity(VSMiniBlockEntities.MINI_WORLD_CREATOR.get(),pos, state) {
-    var connectedShipID: Long? = null
+    private var connectedShipID: Long? = null
 
     override fun load(tag: CompoundTag) {
         super.load(tag)
-
         connectedShipID = tag.getLong("connectedshipid")
     }
 
     override fun saveAdditional(tag: CompoundTag) {
         super.saveAdditional(tag)
 
-        if (connectedShipID!=null) tag.putLong("connectedShipID", connectedShipID!!)
+        if (connectedShipID!=null) tag.putLong("connectedshipid", connectedShipID!!)
     }
 
     fun createMiniworld() {
@@ -45,7 +44,6 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
         val block: MiniWorldCreatorBlock = this.blockState.block as MiniWorldCreatorBlock
         val tier: Double = block.Tier;
         val level:ServerLevel = this.level as ServerLevel
-
 
 
 
@@ -150,10 +148,14 @@ class MiniWorldCreatorBlockEntity (pos: BlockPos, state: BlockState): BlockEntit
     }
 
     fun onRemove() {
-
+        println(connectedShipID)
         if (connectedShipID==null || level?.isClientSide() == true) return
-        val ship: Ship = level.shipObjectWorld.allShips.getById(connectedShipID!!) ?: return
+
+        val ship: Ship = level.shipObjectWorld.allShips.getById(connectedShipID!!+1) ?: return
+        println("Passed check 2")
         val servShip:ServerShip = ship as ServerShip
+        println("Passed check 3")
         (level as ServerLevel).server.shipObjectWorld.deleteShip(servShip)
+        println("Passed check 4")
     }
 }
